@@ -3,6 +3,7 @@ import './globals.css';
 import { SiteProvider } from '@/context/SiteContext';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://dr-majed-chy.vercel.app'),
   title: 'Dr. Md. Mohiuddin Majed Chy | Interventional Pain Specialist | ESRA Certified',
   description: 'Official practice website of Dr. Md. Mohiuddin Majed Chowdhury - Consultant Interventional Pain Medicine & Regional Anaesthesiologist. Active Member of The European Society of Regional Anaesthesia & Pain Therapy (ESRA) 2026. Specialized in C-Arm spine injections, ultrasound-guided nerve blocks, and non-surgical pain relief.',
   keywords: [
