@@ -75,6 +75,8 @@ export const BlogsSection: React.FC = () => {
                   <img
                     src={blog.coverImage}
                     alt={blog.title}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-3 left-3">

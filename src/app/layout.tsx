@@ -40,6 +40,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href="/images/dr_majed_portrait_hd.jpg"
+          fetchPriority="high"
+        />
+      </head>
       <body className="min-h-screen bg-[#050b14] text-slate-100 antialiased selection:bg-teal-500 selection:text-white">
         <SiteProvider>
           {children}

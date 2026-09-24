@@ -173,6 +173,8 @@ export const HeroSection: React.FC = () => {
                   alt={profile.name}
                   className="w-full h-full object-cover object-top transition-transform duration-700 hover:scale-103"
                   loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
                 />
 
                 {/* Subtle Gradient Fog at base of photo */}

@@ -50,6 +50,8 @@ export const AboutSection: React.FC = () => {
                   <img
                     src="/images/certificate_esra.jpg"
                     alt="ESRA 2026 Membership Certificate"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
@@ -68,6 +70,8 @@ export const AboutSection: React.FC = () => {
                   <img
                     src="/images/speech_pain_congress.jpg"
                     alt="Dr. Majed at 27th Pain Congress Dhaka"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
