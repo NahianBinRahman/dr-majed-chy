@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useSite } from '@/context/SiteContext';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Crosshair, 
   ArrowRight, 
@@ -10,8 +11,14 @@ import {
   Sparkles, 
   HelpCircle,
   Clock,
-  Calendar
+  Calendar,
+  Rotate3d,
+  Glasses,
+  Zap,
+  Volume2
 } from 'lucide-react';
+import { ThreeSpineViewer } from './ThreeSpineViewer';
+import { soundEngine } from '@/lib/soundEngine';
 
 interface PainZone {
   id: string;
@@ -94,105 +101,182 @@ const painZones: PainZone[] = [
   }
 ];
 
-export const InteractivePainLocator: React.FC = () => {
+interface InteractivePainLocatorProps {
+  onOpenXRModal?: () => void;
+}
+
+export const InteractivePainLocator: React.FC<InteractivePainLocatorProps> = ({ onOpenXRModal }) => {
   const [selectedZone, setSelectedZone] = useState<PainZone>(painZones[0]);
+  const [activeTab, setActiveTab] = useState<'3d_twin' | 'clinical_details'>('3d_twin');
   const { setIsBookingModalOpen, setSelectedServiceForBooking } = useSite();
 
+  const handleSelectZone = (zone: PainZone) => {
+    soundEngine.playScanPulse();
+    setSelectedZone(zone);
+  };
+
   const handleBookForCondition = (zoneName: string) => {
+    soundEngine.playHapticClick();
     setSelectedServiceForBooking(zoneName);
     setIsBookingModalOpen(true);
   };
 
   return (
-    <section id="pain-locator" className="py-20 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-semibold border border-cyan-500/20">
-            <Crosshair className="w-3.5 h-3.5" />
-            <span>Symptom Diagnostic Navigator</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-white">
-            Where is Your <span className="text-gradient-primary">Pain Located?</span>
-          </h2>
-          <p className="text-slate-400 text-sm sm:text-base">
-            Select your pain region below to discover Dr. Majed&apos;s tailored minimally-invasive intervention and expected recovery path.
-          </p>
-        </div>
+    <section id="pain-locator" className="py-20 relative overflow-hidden bg-[#030712]/90 border-t border-white/[0.04]">
+      {/* Background Hologram grid */}
+      <div className="absolute inset-0 hologram-grid opacity-25 pointer-events-none" />
 
-        {/* Interactive Selector Tabs & Detailed Card */}
+      {/* Radial aura glow */}
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[160px] pointer-events-none opacity-10"
+        style={{ background: 'radial-gradient(circle, var(--primary-color) 0%, rgba(6,182,212,0.1) 60%, transparent 80%)' }}
+      />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        
+        {/* Section Header with Framer Motion */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto mb-12 space-y-3"
+        >
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 text-cyan-300 text-xs font-semibold border border-cyan-500/30 backdrop-blur-md shadow-sm">
+            <Crosshair className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Interactive 3D Symptom Navigator</span>
+            <span className="text-slate-600">•</span>
+            <span className="text-teal-400 font-bold flex items-center gap-1">
+              <Rotate3d className="w-3 h-3 animate-spin-slow" />
+              Three.js & WebXR Powered
+            </span>
+          </div>
+
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold text-white tracking-tight">
+            Where is Your <span className="bg-gradient-to-r from-teal-300 via-teal-400 to-cyan-400 bg-clip-text text-transparent">Pain Located?</span>
+          </h2>
+          <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+            Select your pain generator below to manipulate Dr. Majed&apos;s real-time 3D anatomical model, visualize the exact nerve target under C-Arm fluoroscopy, and review non-surgical recovery.
+          </p>
+        </motion.div>
+
+        {/* Main Grid: Left Zone Buttons + Center/Right 3D Digital Twin & Clinical Panel */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Left Column: Quick Pain Zones List */}
-          <div className="lg:col-span-5 space-y-3">
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2">
-              Select Pain Generator Area:
+          {/* Left Column: Quick Pain Zones List (5 cols) */}
+          <div className="lg:col-span-4 space-y-2.5">
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider px-2 flex items-center justify-between">
+              <span>Select Pain Generator:</span>
+              <span className="text-[10px] text-teal-400 font-mono">6 ANATOMICAL PATHWAYS</span>
             </div>
+
             {painZones.map((zone) => {
               const isSelected = selectedZone.id === zone.id;
               return (
-                <button
+                <motion.button
                   key={zone.id}
-                  onClick={() => setSelectedZone(zone)}
-                  className={`w-full text-left p-4 rounded-2xl transition-all duration-300 flex items-center justify-between border ${
+                  whileHover={{ x: 4, scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleSelectZone(zone)}
+                  onMouseEnter={() => soundEngine.playHoverChime()}
+                  className={`w-full text-left p-3.5 sm:p-4 rounded-2xl transition-all duration-300 flex items-center justify-between border ${
                     isSelected
-                      ? 'glass-panel border-teal-500 shadow-lg text-white scale-[1.02]'
-                      : 'bg-slate-900/50 border-slate-800/80 text-slate-300 hover:bg-slate-900 hover:border-slate-700'
+                      ? 'bg-slate-900/90 border-teal-500/80 shadow-[0_0_25px_rgba(20,184,166,0.3)] text-white'
+                      : 'bg-slate-950/60 border-white/[0.06] text-slate-300 hover:bg-slate-900 hover:border-slate-700'
                   }`}
-                  style={isSelected ? { borderColor: 'var(--primary-color)' } : {}}
                 >
                   <div className="flex items-center gap-3">
                     <div 
-                      className={`w-3 h-3 rounded-full transition-all ${
-                        isSelected ? 'scale-125' : 'bg-slate-700'
+                      className={`w-3.5 h-3.5 rounded-full transition-all flex items-center justify-center ${
+                        isSelected ? 'bg-teal-400 shadow-[0_0_10px_rgba(20,184,166,0.8)]' : 'bg-slate-700'
                       }`}
-                      style={isSelected ? { backgroundColor: 'var(--primary-color)' } : {}}
-                    />
+                    >
+                      {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-slate-950" />}
+                    </div>
                     <div>
-                      <div className="text-sm font-bold">{zone.name}</div>
+                      <div className="text-sm font-bold tracking-tight">{zone.name}</div>
                       <div className="text-xs text-slate-400">{zone.category}</div>
                     </div>
                   </div>
+
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700 hidden sm:inline-block">
-                      {zone.procedureType}
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-900 text-teal-300 border border-teal-500/20 hidden sm:inline-block">
+                      {zone.procedureType.split(' ')[0]}
                     </span>
                     <ArrowRight className={`w-4 h-4 transition-transform ${isSelected ? 'translate-x-1 text-teal-400' : 'text-slate-600'}`} />
                   </div>
-                </button>
+                </motion.button>
               );
             })}
+
+            {/* Quick WebXR Direct Launcher Card */}
+            {onOpenXRModal && (
+              <motion.div
+                whileHover={{ y: -2 }}
+                onClick={() => {
+                  soundEngine.playXRModeSound();
+                  onOpenXRModal();
+                }}
+                className="p-4 rounded-2xl bg-gradient-to-r from-teal-500/15 via-cyan-500/10 to-transparent border border-teal-500/30 hover:border-teal-400/60 cursor-pointer shadow-lg transition-all flex items-center justify-between"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-teal-300">
+                    <Glasses className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span>Launch WebXR Spatial Lab</span>
+                      <span className="w-2 h-2 rounded-full bg-teal-400 animate-ping" />
+                    </div>
+                    <div className="text-[11px] text-slate-400">
+                      Immersive stereoscopic 3D & AR room
+                    </div>
+                  </div>
+                </div>
+                <ArrowRight className="w-4 h-4 text-teal-400" />
+              </motion.div>
+            )}
           </div>
 
-          {/* Right Column: Detailed Clinical Breakdown Card */}
-          <div className="lg:col-span-7">
-            <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 relative shadow-2xl">
+          {/* Right Column: Three.js 3D Spine Viewer & Clinical Breakdown (8 cols) */}
+          <div className="lg:col-span-8 space-y-4">
+            
+            {/* 3D Model Display */}
+            <div className="h-[480px] sm:h-[520px] rounded-3xl overflow-hidden shadow-2xl border border-white/[0.1] relative">
+              <ThreeSpineViewer 
+                selectedZoneId={selectedZone.id}
+                onOpenXRModal={onOpenXRModal}
+              />
+            </div>
+
+            {/* Bottom Clinical Breakdown Accordion / Card */}
+            <div className="glass-panel p-6 sm:p-7 rounded-3xl border border-white/[0.08] shadow-2xl bg-slate-950/80 backdrop-blur-xl">
               
-              {/* Badge & Category Header */}
-              <div className="flex flex-wrap items-center justify-between gap-3 pb-5 border-b border-slate-800/80">
+              {/* Header */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/[0.08]">
                 <div>
-                  <span className="text-xs font-semibold text-teal-400 uppercase tracking-wider">
+                  <span className="text-xs font-bold text-teal-400 uppercase tracking-wider font-mono">
                     {selectedZone.category}
                   </span>
-                  <h3 className="text-2xl sm:text-3xl font-display font-extrabold text-white mt-1">
+                  <h3 className="text-xl sm:text-2xl font-display font-extrabold text-white mt-0.5">
                     {selectedZone.name}
                   </h3>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <span 
-                    className="text-xs font-bold px-3 py-1 rounded-full text-white shadow-sm"
+                    className="text-xs font-bold px-3 py-1 rounded-full text-white shadow-sm flex items-center gap-1.5"
                     style={{ backgroundColor: 'var(--primary-color)' }}
                   >
-                    {selectedZone.procedureType}
+                    <Activity className="w-3.5 h-3.5" />
+                    <span>{selectedZone.procedureType}</span>
                   </span>
                 </div>
               </div>
 
-              {/* Clinical Explanation & Highlights */}
-              <div className="py-5 space-y-4">
-                <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
+              {/* Protocol highlights */}
+              <div className="py-4 space-y-4">
+                <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800/80">
                   <div className="text-xs font-bold text-slate-300 mb-1 flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-teal-400" />
                     <span>Specialized Non-Surgical Protocol:</span>
@@ -205,7 +289,7 @@ export const InteractivePainLocator: React.FC = () => {
                   </p>
                 </div>
 
-                {/* Common Symptoms & Verified Diagnosis */}
+                {/* Symptoms and Pathologies */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs pt-1">
                   <div className="space-y-2">
                     <div className="text-slate-400 font-bold uppercase tracking-wider">
@@ -232,35 +316,36 @@ export const InteractivePainLocator: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Recovery & Procedure Stats */}
-                <div className="flex flex-wrap items-center gap-4 pt-3 text-xs text-slate-300">
-                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700">
+                {/* Recovery badges */}
+                <div className="flex flex-wrap items-center gap-3 pt-2 text-xs text-slate-300">
+                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800">
                     <Clock className="w-3.5 h-3.5 text-teal-400" />
                     <span>Recovery: <strong>{selectedZone.recoveryTime}</strong></span>
                   </span>
-                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700">
+                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Daycare: <strong>No Hospital Stay</strong></span>
+                    <span>Daycare: <strong>Walk out in 1–2 hours</strong></span>
                   </span>
                 </div>
               </div>
 
-              {/* Action Trigger */}
-              <div className="pt-5 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+              {/* Action buttons */}
+              <div className="pt-4 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-3">
                 <div className="text-xs text-slate-400 text-center sm:text-left">
-                  Suffering from this condition? Consult Dr. Majed for direct assessment.
+                  Suffering from {selectedZone.name.toLowerCase()}? Consult Dr. Majed directly.
                 </div>
                 <button
                   onClick={() => handleBookForCondition(selectedZone.name)}
-                  className="w-full sm:w-auto px-6 py-3 rounded-xl text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-lg hover:brightness-110 active:scale-95 medical-glow transition-all"
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-xl text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-lg hover:brightness-110 active:scale-95 medical-glow transition-all"
                   style={{ backgroundColor: 'var(--primary-color)' }}
                 >
                   <Calendar className="w-4 h-4" />
-                  <span>Book for {selectedZone.name}</span>
+                  <span>Book Assessment for {selectedZone.name}</span>
                 </button>
               </div>
 
             </div>
+
           </div>
 
         </div>

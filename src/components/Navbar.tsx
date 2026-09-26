@@ -12,8 +12,11 @@ import {
   Sliders, 
   Moon, 
   Sun,
-  ChevronRight
+  ChevronRight,
+  Glasses
 } from 'lucide-react';
+import { AudioToggle } from './AudioToggle';
+import { soundEngine } from '@/lib/soundEngine';
 
 export const Navbar: React.FC = () => {
   const { siteData, setIsAdminOpen, setIsBookingModalOpen, updateTheme } = useSite();
@@ -97,9 +100,15 @@ export const Navbar: React.FC = () => {
 
           {/* Right: Quick Actions */}
           <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
+            {/* Audio SFX Toggle with live equalizer wave */}
+            <AudioToggle />
+
             {/* Theme Toggle Button */}
             <button
-              onClick={toggleThemeMode}
+              onClick={() => {
+                soundEngine.playHapticClick();
+                toggleThemeMode();
+              }}
               title="Toggle Dark/Light Mode"
               className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/[0.08] border border-transparent hover:border-white/[0.08] transition-all"
               aria-label="Toggle theme"
@@ -113,7 +122,10 @@ export const Navbar: React.FC = () => {
 
             {/* Admin Dashboard Trigger */}
             <button
-              onClick={() => setIsAdminOpen(true)}
+              onClick={() => {
+                soundEngine.playHapticClick();
+                setIsAdminOpen(true);
+              }}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 transition-all"
               title="Open Doctor Admin Dashboard"
             >
@@ -124,6 +136,7 @@ export const Navbar: React.FC = () => {
             {/* Direct Phone / Chamber */}
             <a
               href={`tel:${siteData.profile.phone.replace(/[^0-9+]/g, '')}`}
+              onClick={() => soundEngine.playHapticClick()}
               className="hidden 2xl:flex items-center gap-1.5 text-xs font-medium text-slate-300 hover:text-teal-300 px-2 py-1 transition-colors"
             >
               <Phone className="w-3.5 h-3.5 text-teal-400" />
@@ -132,7 +145,10 @@ export const Navbar: React.FC = () => {
 
             {/* Book Appointment CTA Button */}
             <button
-              onClick={() => setIsBookingModalOpen(true)}
+              onClick={() => {
+                soundEngine.playHapticClick();
+                setIsBookingModalOpen(true);
+              }}
               className="btn-shimmer flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-white text-xs font-bold shadow-[0_0_20px_rgba(20,184,166,0.45)] hover:shadow-[0_0_28px_rgba(20,184,166,0.65)] hover:scale-[1.02] active:scale-95 transition-all"
               style={{ backgroundColor: 'var(--primary-color)' }}
             >

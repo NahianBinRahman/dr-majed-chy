@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useSite } from '@/context/SiteContext';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Award, 
   ShieldCheck, 
@@ -14,43 +15,72 @@ import {
   Clock,
   Stethoscope,
   TrendingUp,
-  Users
+  Rotate3d,
+  Glasses,
+  Zap,
+  Volume2
 } from 'lucide-react';
+import { ThreeSpineViewer } from './ThreeSpineViewer';
+import { soundEngine } from '@/lib/soundEngine';
 
-export const HeroSection: React.FC = () => {
+interface HeroSectionProps {
+  onOpenXRModal?: () => void;
+}
+
+export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenXRModal }) => {
   const { siteData, setIsBookingModalOpen } = useSite();
   const { profile } = siteData;
+  const [activeVisualTab, setActiveVisualTab] = useState<'profile' | '3d_twin'>('profile');
 
   return (
     <section 
       id="home" 
-      className="relative min-h-[90vh] lg:min-h-[94vh] pt-24 sm:pt-28 lg:pt-28 pb-10 lg:pb-14 flex items-center overflow-hidden bg-[#030712]"
+      className="relative min-h-[92vh] lg:min-h-[96vh] pt-24 sm:pt-28 lg:pt-30 pb-12 lg:pb-16 flex items-center overflow-hidden bg-[#030712]"
     >
-      {/* Subtle Radial Glow Backdrops (Controlled, Non-Aggressive) */}
+      {/* Dynamic Radial Aura Glows */}
       <div 
-        className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full blur-[140px] pointer-events-none opacity-20"
-        style={{ background: 'radial-gradient(circle, var(--primary-color) 0%, rgba(6,182,212,0.1) 60%, transparent 80%)' }}
+        className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[580px] h-[580px] rounded-full blur-[140px] pointer-events-none opacity-20"
+        style={{ background: 'radial-gradient(circle, var(--primary-color) 0%, rgba(6,182,212,0.12) 60%, transparent 80%)' }}
       />
       <div 
-        className="absolute bottom-10 right-1/4 w-[400px] h-[400px] rounded-full blur-[130px] pointer-events-none opacity-10"
-        style={{ background: 'radial-gradient(circle, #3b82f6 0%, transparent 70%)' }}
+        className="absolute bottom-10 right-1/4 w-[450px] h-[450px] rounded-full blur-[130px] pointer-events-none opacity-15"
+        style={{ background: 'radial-gradient(circle, #0284c7 0%, transparent 70%)' }}
       />
+
+      {/* Hologram Background Grid Lines */}
+      <div className="absolute inset-0 hologram-grid opacity-30 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-center">
           
           {/* Left Column: Clinical Credibility & Messaging (~55% width) */}
-          <div className="order-2 lg:order-1 lg:col-span-7 space-y-5 text-center lg:text-left flex flex-col justify-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="order-2 lg:order-1 lg:col-span-7 space-y-5 text-center lg:text-left flex flex-col justify-center"
+          >
             
             {/* Top Verification Trust Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-teal-500/25 text-teal-300 text-xs font-semibold shadow-sm mx-auto lg:mx-0 backdrop-blur-md">
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.1, duration: 0.5 }}
+              onMouseEnter={() => soundEngine.playHoverChime()}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-teal-500/25 text-teal-300 text-xs font-semibold shadow-sm mx-auto lg:mx-0 backdrop-blur-md cursor-default hover:border-teal-500/50 transition-colors"
+            >
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500" />
               </span>
               <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
               <span className="tracking-tight">{profile.badgeText}</span>
-            </div>
+              <span className="text-slate-600 hidden sm:inline">•</span>
+              <span className="hidden sm:inline-flex items-center gap-1 text-[11px] text-cyan-400 font-bold">
+                <Activity className="w-3 h-3 animate-pulse" />
+                Live 3D & XR Enabled
+              </span>
+            </motion.div>
 
             {/* Main Hero Headline */}
             <div className="space-y-2">
@@ -71,6 +101,9 @@ export const HeroSection: React.FC = () => {
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-teal-500/10 text-teal-300 border border-teal-500/30">
                   MD, FIPM
                 </span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
+                  ESRA Active Fellow
+                </span>
               </div>
               <div className="text-xs sm:text-sm font-semibold text-teal-400 tracking-normal">
                 {profile.honorific}
@@ -85,10 +118,14 @@ export const HeroSection: React.FC = () => {
               {profile.heroBio}
             </p>
 
-            {/* Redesigned Luxury Feature Cards (3 Pillars) */}
+            {/* High-Tech 3 Clinical Pillars with Framer Motion hover */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 max-w-xl mx-auto lg:mx-0">
               
-              <div className="group p-3 rounded-xl bg-slate-900/60 backdrop-blur-md border border-white/[0.07] hover:border-teal-500/40 hover:shadow-[0_0_20px_-5px_rgba(20,184,166,0.25)] hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-3 text-left">
+              <motion.div 
+                whileHover={{ y: -4, scale: 1.02 }}
+                onMouseEnter={() => soundEngine.playHoverChime()}
+                className="group p-3 rounded-xl bg-slate-900/60 backdrop-blur-md border border-white/[0.07] hover:border-teal-500/40 hover:shadow-[0_0_20px_-5px_rgba(20,184,166,0.25)] transition-all duration-300 flex items-center gap-3 text-left cursor-default"
+              >
                 <div className="w-8 h-8 rounded-lg bg-teal-500/10 text-teal-400 flex items-center justify-center flex-shrink-0 border border-teal-500/20 group-hover:scale-105 transition-transform">
                   <Activity className="w-4 h-4" />
                 </div>
@@ -96,9 +133,13 @@ export const HeroSection: React.FC = () => {
                   <div className="text-xs font-bold text-white tracking-tight">Live C-Arm</div>
                   <div className="text-[10px] text-slate-400 leading-tight">Fluoroscopy Spine</div>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="group p-3 rounded-xl bg-slate-900/60 backdrop-blur-md border border-white/[0.07] hover:border-teal-500/40 hover:shadow-[0_0_20px_-5px_rgba(6,182,212,0.25)] hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-3 text-left">
+              <motion.div 
+                whileHover={{ y: -4, scale: 1.02 }}
+                onMouseEnter={() => soundEngine.playHoverChime()}
+                className="group p-3 rounded-xl bg-slate-900/60 backdrop-blur-md border border-white/[0.07] hover:border-cyan-500/40 hover:shadow-[0_0_20px_-5px_rgba(6,182,212,0.25)] transition-all duration-300 flex items-center gap-3 text-left cursor-default"
+              >
                 <div className="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center flex-shrink-0 border border-cyan-500/20 group-hover:scale-105 transition-transform">
                   <Sparkles className="w-4 h-4" />
                 </div>
@@ -106,9 +147,13 @@ export const HeroSection: React.FC = () => {
                   <div className="text-xs font-bold text-white tracking-tight">Ultrasound Guided</div>
                   <div className="text-[10px] text-slate-400 leading-tight">Zero-Radiation Blocks</div>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="group p-3 rounded-xl bg-slate-900/60 backdrop-blur-md border border-white/[0.07] hover:border-teal-500/40 hover:shadow-[0_0_20px_-5px_rgba(59,130,246,0.25)] hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-3 text-left">
+              <motion.div 
+                whileHover={{ y: -4, scale: 1.02 }}
+                onMouseEnter={() => soundEngine.playHoverChime()}
+                className="group p-3 rounded-xl bg-slate-900/60 backdrop-blur-md border border-white/[0.07] hover:border-blue-500/40 hover:shadow-[0_0_20px_-5px_rgba(59,130,246,0.25)] transition-all duration-300 flex items-center gap-3 text-left cursor-default"
+              >
                 <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center flex-shrink-0 border border-blue-500/20 group-hover:scale-105 transition-transform">
                   <CheckCircle2 className="w-4 h-4" />
                 </div>
@@ -116,27 +161,36 @@ export const HeroSection: React.FC = () => {
                   <div className="text-xs font-bold text-white tracking-tight">Daycare Discharge</div>
                   <div className="text-[10px] text-slate-400 leading-tight">Walk Out In 1–2 Hrs</div>
                 </div>
-              </div>
+              </motion.div>
 
             </div>
 
             {/* Conversion CTA Action Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
-              <button
-                onClick={() => setIsBookingModalOpen(true)}
-                className="w-full sm:w-auto px-6 sm:px-7 py-3 rounded-xl text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-[0_0_30px_-5px_rgba(20,184,166,0.45)] bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 hover:shadow-[0_0_35px_rgba(20,184,166,0.65)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 group"
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => {
+                  soundEngine.playHapticClick();
+                  setIsBookingModalOpen(true);
+                }}
+                className="w-full sm:w-auto px-6 sm:px-7 py-3 rounded-xl text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-[0_0_30px_-5px_rgba(20,184,166,0.45)] bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 hover:shadow-[0_0_35px_rgba(20,184,166,0.65)] transition-all duration-300 group"
               >
                 <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-teal-100" />
                 <span>Book Direct Consultation</span>
                 <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </button>
+              </motion.button>
 
-              <a
+              <motion.a
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 href="#pain-locator"
+                onClick={() => soundEngine.playScanPulse()}
                 className="w-full sm:w-auto px-5 sm:px-6 py-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 hover:text-white font-semibold text-sm sm:text-base border border-slate-700/80 hover:border-teal-500/40 flex items-center justify-center gap-2 transition-all duration-300 shadow-sm"
               >
-                <span>Interactive Pain Map</span>
-              </a>
+                <Rotate3d className="w-4 h-4 text-teal-400" />
+                <span>3D Spine & Pain Map</span>
+              </motion.a>
             </div>
 
             {/* Chamber Visiting Timing & Address Micro-bar */}
@@ -152,91 +206,167 @@ export const HeroSection: React.FC = () => {
               </span>
             </div>
 
-          </div>
+          </motion.div>
 
-          {/* Right Column: Premium Medical Profile Card (~45% width) */}
-          <div className="order-1 lg:order-2 lg:col-span-5 relative flex justify-center">
+          {/* Right Column: Interactive Switcher Card (Profile OR Live 3D Twin) (~45% width) */}
+          <div className="order-1 lg:order-2 lg:col-span-5 relative flex flex-col items-center">
             
+            {/* View Mode Switcher Pill Above Card */}
+            <div className="flex items-center gap-1.5 p-1 rounded-full bg-slate-900/90 border border-white/[0.08] backdrop-blur-xl mb-3 shadow-xl">
+              <button
+                onClick={() => {
+                  soundEngine.playHapticClick();
+                  setActiveVisualTab('profile');
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                  activeVisualTab === 'profile'
+                    ? 'bg-teal-500 text-white shadow-[0_0_12px_rgba(20,184,166,0.5)]'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Stethoscope className="w-3.5 h-3.5" />
+                <span>Doctor Profile</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  soundEngine.playScanPulse();
+                  setActiveVisualTab('3d_twin');
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                  activeVisualTab === '3d_twin'
+                    ? 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.5)]'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Rotate3d className="w-3.5 h-3.5 text-teal-300" />
+                <span>3D Neuraxial Twin</span>
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+              </button>
+            </div>
+
             {/* Ambient Background Aura */}
             <div 
-              className="absolute inset-0 rounded-3xl blur-3xl opacity-35 -z-10 scale-95"
+              className="absolute inset-0 rounded-3xl blur-3xl opacity-30 -z-10 scale-95"
               style={{ backgroundColor: 'var(--primary-color)' }}
             />
 
-            {/* Outer Profile Container */}
-            <div className="relative rounded-3xl overflow-hidden border border-white/[0.12] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.75)] bg-gradient-to-b from-slate-900/90 via-slate-900/95 to-[#030712] max-w-sm sm:max-w-md w-full backdrop-blur-xl">
+            {/* Container View with AnimatePresence */}
+            <div className="relative rounded-3xl overflow-hidden border border-white/[0.12] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.75)] bg-gradient-to-b from-slate-900/90 via-slate-900/95 to-[#030712] max-w-sm sm:max-w-md w-full backdrop-blur-xl min-h-[480px]">
               
-              {/* Doctor Portrait Area */}
-              <div className="relative aspect-[4/4.7] w-full overflow-hidden bg-slate-950">
-                <img
-                  src={profile.avatarUrl || '/images/dr_majed_portrait_hd.jpg'}
-                  alt={profile.name}
-                  className="w-full h-full object-cover object-top transition-transform duration-700 hover:scale-103"
-                  loading="eager"
-                  decoding="async"
-                  fetchPriority="high"
-                />
+              <AnimatePresence mode="wait">
+                {activeVisualTab === 'profile' ? (
+                  <motion.div
+                    key="profile"
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex flex-col h-full"
+                  >
+                    {/* Doctor Portrait Area */}
+                    <div className="relative aspect-[4/4.7] w-full overflow-hidden bg-slate-950">
+                      <img
+                        src={profile.avatarUrl || '/images/dr_majed_portrait_hd.jpg'}
+                        alt={profile.name}
+                        className="w-full h-full object-cover object-top transition-transform duration-700 hover:scale-103"
+                        loading="eager"
+                        decoding="async"
+                        fetchPriority="high"
+                      />
 
-                {/* Subtle Gradient Fog at base of photo */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0b1523] via-transparent to-transparent" />
+                      {/* Subtle Gradient Fog at base of photo */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0b1523] via-transparent to-transparent" />
 
-                {/* Floating European ESRA Badge Top Right */}
-                <div className="absolute top-3.5 right-3.5 px-3 py-1.5 rounded-xl bg-slate-950/80 backdrop-blur-md border border-teal-500/35 flex items-center gap-2 shadow-lg">
-                  <Award className="w-4 h-4 text-teal-400" />
-                  <span className="text-[11px] font-bold text-white tracking-wide">
-                    ESRA 2026 Certified
-                  </span>
-                </div>
-
-                {/* Bottom Identity Panel Over Image (Cleaned, 98% Success removed) */}
-                <div className="absolute bottom-3 left-3 right-3 text-left">
-                  <div className="p-3.5 rounded-2xl bg-slate-950/85 backdrop-blur-md border border-white/[0.08] shadow-xl">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-white font-bold text-sm sm:text-base leading-snug">
-                          {profile.name}
-                        </div>
-                        <div className="text-teal-400 text-xs font-medium tracking-tight">
-                          Consultant Interventional Pain Physician
-                        </div>
+                      {/* Floating European ESRA Badge Top Right */}
+                      <div className="absolute top-3.5 right-3.5 px-3 py-1.5 rounded-xl bg-slate-950/80 backdrop-blur-md border border-teal-500/35 flex items-center gap-2 shadow-lg">
+                        <Award className="w-4 h-4 text-teal-400" />
+                        <span className="text-[11px] font-bold text-white tracking-wide">
+                          ESRA 2026 Certified
+                        </span>
                       </div>
-                      <div className="w-8 h-8 rounded-xl bg-teal-500/15 border border-teal-500/30 flex items-center justify-center text-teal-400 flex-shrink-0">
-                        <Stethoscope className="w-4 h-4" />
+
+                      {/* WebXR Quick Link Pill Top Left */}
+                      {onOpenXRModal && (
+                        <button
+                          onClick={() => {
+                            soundEngine.playXRModeSound();
+                            onOpenXRModal();
+                          }}
+                          className="absolute top-3.5 left-3.5 px-3 py-1.5 rounded-xl bg-teal-500/20 hover:bg-teal-500/30 backdrop-blur-md border border-teal-400/40 flex items-center gap-1.5 text-teal-300 text-[11px] font-bold shadow-lg transition-all"
+                        >
+                          <Glasses className="w-3.5 h-3.5" />
+                          <span>WebXR Spatial</span>
+                        </button>
+                      )}
+
+                      {/* Bottom Identity Panel Over Image */}
+                      <div className="absolute bottom-3 left-3 right-3 text-left">
+                        <div className="p-3.5 rounded-2xl bg-slate-950/85 backdrop-blur-md border border-white/[0.08] shadow-xl">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="text-white font-bold text-sm sm:text-base leading-snug">
+                                {profile.name}
+                              </div>
+                              <div className="text-teal-400 text-xs font-medium tracking-tight">
+                                Consultant Interventional Pain Physician
+                              </div>
+                            </div>
+                            <div className="w-8 h-8 rounded-xl bg-teal-500/15 border border-teal-500/30 flex items-center justify-center text-teal-400 flex-shrink-0">
+                              <Stethoscope className="w-4 h-4" />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </div>
 
-              {/* High-End Healthcare Dashboard Statistics Bar */}
-              <div className="grid grid-cols-3 divide-x divide-white/[0.06] p-3.5 bg-slate-950/90 text-center border-t border-white/[0.06]">
-                <div className="px-2">
-                  <div className="text-base sm:text-lg font-extrabold text-white font-display tracking-tight">
-                    {profile.experienceYears}+
-                  </div>
-                  <div className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mt-0.5">
-                    Years Practice
-                  </div>
-                </div>
+                    {/* Healthcare Statistics Bar */}
+                    <div className="grid grid-cols-3 divide-x divide-white/[0.06] p-3.5 bg-slate-950/90 text-center border-t border-white/[0.06]">
+                      <div className="px-2">
+                        <div className="text-base sm:text-lg font-extrabold text-white font-display tracking-tight">
+                          {profile.experienceYears}+
+                        </div>
+                        <div className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mt-0.5">
+                          Years Practice
+                        </div>
+                      </div>
 
-                <div className="px-2">
-                  <div className="text-base sm:text-lg font-extrabold text-teal-400 font-display tracking-tight">
-                    {(profile.proceduresDone / 1000).toFixed(1)}k+
-                  </div>
-                  <div className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mt-0.5">
-                    Procedures Done
-                  </div>
-                </div>
+                      <div className="px-2">
+                        <div className="text-base sm:text-lg font-extrabold text-teal-400 font-display tracking-tight">
+                          {(profile.proceduresDone / 1000).toFixed(1)}k+
+                        </div>
+                        <div className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mt-0.5">
+                          Procedures Done
+                        </div>
+                      </div>
 
-                <div className="px-2">
-                  <div className="text-base sm:text-lg font-extrabold text-white font-display tracking-tight">
-                    {(profile.patientsTreated / 1000).toFixed(1)}k+
-                  </div>
-                  <div className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mt-0.5">
-                    Happy Patients
-                  </div>
-                </div>
-              </div>
+                      <div className="px-2">
+                        <div className="text-base sm:text-lg font-extrabold text-white font-display tracking-tight">
+                          {(profile.patientsTreated / 1000).toFixed(1)}k+
+                        </div>
+                        <div className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mt-0.5">
+                          Happy Patients
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="3d_twin"
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-full h-full min-h-[500px]"
+                  >
+                    <ThreeSpineViewer 
+                      selectedZoneId="lower-back"
+                      onOpenXRModal={onOpenXRModal}
+                      compact={true}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
             </div>
 

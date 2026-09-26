@@ -225,4 +225,44 @@ body {
   }
 }
 
+/* Sound Wave Equalizer Animations */
+@keyframes soundWave1 {
+  0%, 100% { height: 4px; }
+  50% { height: 12px; }
+}
+
+@keyframes soundWave2 {
+  0%, 100% { height: 11px; }
+  50% { height: 5px; }
+}
+
+@keyframes soundWave3 {
+  0%, 100% { height: 6px; }
+  50% { height: 13px; }
+}
+
+/* ECG Biometric Pulse Line Animation */
+@keyframes ecgPulse {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-spin-slow {
+  animation: spin 12s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 3D Holographic Grid */
+.hologram-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(20, 184, 166, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(20, 184, 166, 0.05) 1px, transparent 1px);
+}
+
+
 

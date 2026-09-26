@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useSite } from '@/context/SiteContext';
+import { motion } from 'framer-motion';
 import { 
   Award, 
   CheckCircle, 
@@ -14,28 +15,35 @@ import {
   Building,
   GraduationCap
 } from 'lucide-react';
+import { soundEngine } from '@/lib/soundEngine';
 
 export const AboutSection: React.FC = () => {
   const { siteData, setIsBookingModalOpen } = useSite();
   const { profile } = siteData;
 
   return (
-    <section id="about" className="py-20 relative overflow-hidden bg-slate-950/40">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="about" className="py-20 relative overflow-hidden bg-slate-950/40 border-t border-white/[0.04]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto mb-16 space-y-3"
+        >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 text-teal-400 text-xs font-semibold border border-teal-500/20">
             <GraduationCap className="w-3.5 h-3.5" />
             <span>Profile & Credentials</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-white">
-            Meet <span className="text-gradient-primary">Dr. Md. Mohiuddin Majed Chowdhury</span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold text-white">
+            Meet <span className="bg-gradient-to-r from-teal-300 via-teal-400 to-cyan-400 bg-clip-text text-transparent">Dr. Md. Mohiuddin Majed Chowdhury</span>
           </h2>
           <p className="text-slate-400 text-sm sm:text-base">
             International pain specialist certified by The European Society of Regional Anaesthesia & Pain Therapy (ESRA), pioneering precision image-guided therapies.
           </p>
-        </div>
+        </motion.div>
 
         {/* 2-Column Content */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -45,7 +53,11 @@ export const AboutSection: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               
               {/* ESRA Certificate Spotlight Card */}
-              <div className="glass-panel p-4 rounded-2xl border border-teal-500/30 glow-card relative overflow-hidden group">
+              <motion.div 
+                whileHover={{ y: -5, scale: 1.02 }}
+                onMouseEnter={() => soundEngine.playHoverChime()}
+                className="glass-panel p-4 rounded-2xl border border-teal-500/30 glow-card relative overflow-hidden group cursor-default"
+              >
                 <div className="aspect-[4/3] rounded-xl overflow-hidden mb-3 bg-slate-900 border border-slate-800">
                   <img
                     src="/images/certificate_esra.jpg"
@@ -62,10 +74,14 @@ export const AboutSection: React.FC = () => {
                 <p className="text-xs text-slate-300">
                   Certified active member of The European Society of Regional Anaesthesia & Pain Therapy.
                 </p>
-              </div>
+              </motion.div>
 
               {/* 27th Pain Congress Stage Photo */}
-              <div className="glass-panel p-4 rounded-2xl border border-slate-800 glow-card relative overflow-hidden group">
+              <motion.div 
+                whileHover={{ y: -5, scale: 1.02 }}
+                onMouseEnter={() => soundEngine.playHoverChime()}
+                className="glass-panel p-4 rounded-2xl border border-slate-800 glow-card relative overflow-hidden group cursor-default"
+              >
                 <div className="aspect-[4/3] rounded-xl overflow-hidden mb-3 bg-slate-900 border border-slate-800">
                   <img
                     src="/images/speech_pain_congress.jpg"
@@ -82,12 +98,15 @@ export const AboutSection: React.FC = () => {
                 <p className="text-xs text-slate-300">
                   27th Pain Congress, Intercontinental Dhaka (BSSP & IASP Chapter).
                 </p>
-              </div>
+              </motion.div>
 
             </div>
 
             {/* Quote / Mission Box */}
-            <div className="glass-panel p-6 rounded-2xl border border-slate-800/80 relative">
+            <motion.div 
+              whileHover={{ scale: 1.01 }}
+              className="glass-panel p-6 rounded-2xl border border-slate-800/80 relative"
+            >
               <div 
                 className="absolute top-0 left-0 w-1.5 h-full rounded-l-2xl"
                 style={{ backgroundColor: 'var(--primary-color)' }}
@@ -98,87 +117,86 @@ export const AboutSection: React.FC = () => {
               <div className="mt-4 flex items-center justify-between">
                 <div>
                   <div className="text-xs font-bold text-white">{profile.name}</div>
-                  <div className="text-[11px] text-teal-400">{profile.honorific}</div>
+                  <div className="text-[11px] text-teal-400">Consultant Interventional Pain Physician</div>
                 </div>
-                <span className="text-[11px] px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-                  14+ Years Clinical Mastery
-                </span>
+                <div className="px-2.5 py-1 rounded bg-teal-500/10 text-teal-300 text-[10px] font-bold border border-teal-500/20">
+                  ESRA 2026
+                </div>
               </div>
-            </div>
+            </motion.div>
 
           </div>
 
-          {/* Right Column: Bio, Qualifications, and Chamber Details */}
-          <div className="lg:col-span-6 space-y-6">
-            
-            <div className="space-y-4">
-              <h3 className="text-2xl font-display font-bold text-white">
-                World-Class Pain Interventions Rooted in Compassion
+          {/* Right Column: Narrative Biography & Credentials Checklist */}
+          <motion.div 
+            initial={{ opacity: 0, x: 25 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-6 space-y-6"
+          >
+            <div>
+              <span className="text-xs font-bold text-teal-400 uppercase tracking-wider">
+                Clinical Excellence & Expertise
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-display font-bold text-white mt-1">
+                Pioneering Interventional Pain Management Without Surgery
               </h3>
-              <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-                {profile.fullBio}
-              </p>
             </div>
 
-            {/* Core Medical Competencies */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+              {profile.fullBio || profile.heroBio}
+            </p>
+
+            {/* Checklist of Specializations */}
+            <div className="space-y-3 pt-2">
               {[
-                'C-Arm Fluoroscopy Spine Interventions',
-                'Ultrasound-Guided Regional Nerve Blocks',
-                'Radiofrequency Neurotomy (RFA)',
-                'Cervical & Lumbar Disc Decompression',
-                'Cancer Sympathetic Neurolysis',
-                'Knee & Shoulder Joint Hydrodilatation',
+                { title: 'European Society of Regional Anaesthesia & Pain Therapy (ESRA)', desc: 'Active international fellow advancing evidence-based regional anaesthetic protocols.' },
+                { title: 'Bangladesh Society for Study of Pain (BSSP)', desc: 'Life member and active clinical faculty training the next generation of spine specialists.' },
+                { title: 'Microscopic C-Arm Fluoroscopy Needle Guidance', desc: 'Real-time radiographic visualization eliminating blind injection errors.' },
+                { title: 'High-Resolution Musculoskeletal Ultrasound', desc: 'Zero-radiation sonographic visualization for peripheral nerves, joints, and tendons.' }
               ].map((item, idx) => (
-                <div key={idx} className="flex items-center gap-2.5 text-xs sm:text-sm text-slate-200">
-                  <CheckCircle className="w-4 h-4 text-teal-400 flex-shrink-0" />
-                  <span>{item}</span>
+                <div key={idx} className="flex items-start gap-3">
+                  <div className="w-5 h-5 rounded-full bg-teal-500/20 text-teal-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <CheckCircle className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <div className="text-xs sm:text-sm font-bold text-white">{item.title}</div>
+                    <div className="text-xs text-slate-400 leading-snug">{item.desc}</div>
+                  </div>
                 </div>
               ))}
             </div>
 
-            {/* Chamber Card */}
-            <div className="glass-panel p-5 rounded-2xl border border-slate-800 space-y-3 mt-4">
-              <div className="flex items-center gap-2 text-white font-bold text-sm">
-                <Building className="w-4 h-4 text-teal-400" />
-                <span>Primary Chamber & Hospital Consultation</span>
+            {/* Chamber Direct Info Bar */}
+            <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2 text-xs">
+              <div className="flex items-center gap-2 text-slate-300">
+                <Building className="w-4 h-4 text-teal-400 flex-shrink-0" />
+                <span><strong>Primary Chamber:</strong> {profile.chamberAddress}</span>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-300 pt-1">
-                <div className="space-y-1">
-                  <div className="text-slate-400 font-medium">Chamber Location:</div>
-                  <div className="text-white font-semibold flex items-start gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-teal-400 mt-0.5 flex-shrink-0" />
-                    <span>{profile.chamberAddress}</span>
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <div className="text-slate-400 font-medium">Consultation Hours:</div>
-                  <div className="text-white font-semibold flex items-start gap-1">
-                    <Clock className="w-3.5 h-3.5 text-teal-400 mt-0.5 flex-shrink-0" />
-                    <span>{profile.visitingHours}</span>
-                  </div>
-                  <div className="text-teal-400 text-[11px]">{profile.availableDays}</div>
-                </div>
-              </div>
-
-              <div className="pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-2 text-xs">
-                  <Phone className="w-3.5 h-3.5 text-teal-400" />
-                  <span className="text-white font-bold">{profile.phone}</span>
-                </div>
-                <button
-                  onClick={() => setIsBookingModalOpen(true)}
-                  className="px-4 py-2 rounded-xl text-white text-xs font-bold transition-all shadow medical-glow hover:brightness-110"
-                  style={{ backgroundColor: 'var(--primary-color)' }}
-                >
-                  Book In-Person Visit
-                </button>
+              <div className="flex items-center gap-2 text-slate-300">
+                <Clock className="w-4 h-4 text-teal-400 flex-shrink-0" />
+                <span><strong>Clinical Hours:</strong> {profile.visitingHours}</span>
               </div>
             </div>
 
-          </div>
+            {/* CTA Button */}
+            <div className="pt-2">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                  soundEngine.playHapticClick();
+                  setIsBookingModalOpen(true);
+                }}
+                className="px-6 py-3 rounded-xl text-white text-xs sm:text-sm font-bold shadow-lg flex items-center gap-2"
+                style={{ backgroundColor: 'var(--primary-color)' }}
+              >
+                <span>Schedule Consultation With Dr. Majed</span>
+              </motion.button>
+            </div>
+
+          </motion.div>
 
         </div>
 

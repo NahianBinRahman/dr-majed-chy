@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { HeroSection } from '@/components/HeroSection';
 import { AboutSection } from '@/components/AboutSection';
@@ -14,21 +14,24 @@ import { Footer } from '@/components/Footer';
 import { MobileFloatingCTA } from '@/components/MobileFloatingCTA';
 import { AppointmentBookingModal } from '@/components/AppointmentBookingModal';
 import { AdminDashboardModal } from '@/components/AdminDashboardModal';
+import { WebXRModal } from '@/components/WebXRModal';
 
 export default function HomePage() {
+  const [isXRModalOpen, setIsXRModalOpen] = useState(false);
+
   return (
     <main className="relative min-h-screen bg-[#050b14] overflow-x-hidden pb-16 sm:pb-0">
-      {/* Navigation with scroll progress */}
+      {/* Navigation with scroll progress and audio visualizer */}
       <Navbar />
 
-      {/* Hero Section with High-Res Studio Portrait */}
-      <HeroSection />
+      {/* Hero Section with High-Res Studio Portrait & 3D Neuraxial Twin Switcher */}
+      <HeroSection onOpenXRModal={() => setIsXRModalOpen(true)} />
 
       {/* About Doctor with ESRA 2026 Credentials */}
       <AboutSection />
 
-      {/* Patient Symptom / Pain Region Interactive Navigator */}
-      <InteractivePainLocator />
+      {/* Patient Symptom / Pain Region Interactive Navigator with Synchronized 3D Spine */}
+      <InteractivePainLocator onOpenXRModal={() => setIsXRModalOpen(true)} />
 
       {/* Dynamic Procedures and Clinical Services */}
       <ServicesSection />
@@ -54,6 +57,7 @@ export default function HomePage() {
       {/* Modals */}
       <AppointmentBookingModal />
       <AdminDashboardModal />
+      <WebXRModal isOpen={isXRModalOpen} onClose={() => setIsXRModalOpen(false)} />
     </main>
   );
 }
